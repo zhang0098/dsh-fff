@@ -134,3 +134,5 @@ npm pack               # tarball for dsh plugin add
 ```
 
 The smoke tests (`tests/smoke.test.mjs`) drive the compiled plugin through a fake Cordis context against a temporary fixture workspace — no model key or harness needed.
+
+For a **real-harness check**, install the published `@deepseek-ai/dsh` CLI, create a profile with this plugin, and run `npm run test:real` (see `tests/real-harness.mjs`): it boots the actual profile composition through the real app-boot Loader and calls the `ff_*` tools on the real `ctx.tools` — no API key required.

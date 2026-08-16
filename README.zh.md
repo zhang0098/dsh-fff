@@ -15,18 +15,27 @@ FFF 在进程内维护一个常驻的原生工作区索引(路径 + 内容)和�
 通过 `dsh` CLI 安装到 profile(需要 Node 22.19+):
 
 ```sh
-# 从 npm
-dsh plugin --profile web add dsh-fff
-
-# 或本地目录 / tarball
-dsh plugin --profile web add ./dsh-fff
-dsh plugin --profile web add ./dsh-fff-0.1.0.tgz
-
-# 或直接从 git(作者提供 prepare 脚本;你需要为构建放行 allowBuilds)
-dsh plugin --profile web add github:you/dsh-fff
+# 从 GitHub(推荐;固定到 v0.1.0 tag)
+dsh plugin --profile web add github:zhang0098/dsh-fff#v0.1.0
 ```
 
-然后启动该 profile。插件会在组合中插入一行(`id: fff`);用 `dsh --profile web --dump-config` 可以查看。
+git 安装拉取的是源码,因此插件会在安装时通过 `prepare` 脚本构建。pnpm ≥10 默认阻止该构建,直到你放行:第一次 `add` 会失败并打印一个精确的 key——把它复制到 profile 的 `pnpm-workspace.yaml` 再重新运行:
+
+```yaml
+allowBuilds:
+  dsh-fff@https://codeload.github.com/zhang0098/dsh-fff/tar.gz/<sha>: true
+```
+
+请把该放行视为安装期的代码执行:只放行你信任源码的包,并优先使用固定的 tag(`#v0.1.0`)而不是裸分支。
+
+本地目录 / tarball 安装无需放行:
+
+```sh
+dsh plugin --profile web add ./dsh-fff
+dsh plugin --profile web add ./dsh-fff-0.1.0.tgz
+```
+
+然后启动该 profile。插件会在组合中插入一行(`id: fff`);用 `dsh --profile web --dump-config` 可以查看。(npm 发布已在计划中;`dsh-fff` 上架 registry 后 `dsh plugin add dsh-fff` 即可用。)
 
 ## 工具
 

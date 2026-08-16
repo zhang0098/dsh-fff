@@ -15,18 +15,27 @@ This plugin's code was written by **DeepSeek V4 Flash** (`deepseek-v4-flash`) th
 Install into a profile with the `dsh` CLI (needs Node 22.19+):
 
 ```sh
-# from npm
-dsh plugin --profile web add dsh-fff
-
-# or from a local checkout / tarball
-dsh plugin --profile web add ./dsh-fff
-dsh plugin --profile web add ./dsh-fff-0.1.0.tgz
-
-# or straight from git (author ships a prepare script; you must allowlist the build)
-dsh plugin --profile web add github:you/dsh-fff
+# from GitHub (recommended; pinned to the v0.1.0 tag)
+dsh plugin --profile web add github:zhang0098/dsh-fff#v0.1.0
 ```
 
-Then start the profile. The plugin inserts one row (`id: fff`) into the composition; `dsh --profile web --dump-config` shows it.
+A git install fetches sources, so the plugin's `prepare` script builds them on install. pnpm ≥10 blocks that build until you allow it: the first `add` fails and prints an exact key — copy it into the profile's `pnpm-workspace.yaml` and re-run:
+
+```yaml
+allowBuilds:
+  dsh-fff@https://codeload.github.com/zhang0098/dsh-fff/tar.gz/<sha>: true
+```
+
+Treat that allowance as install-time code execution: only allow packages whose source you trust, and prefer the pinned tag (`#v0.1.0`) over a bare branch.
+
+Local checkout / tarball installs need no allowance:
+
+```sh
+dsh plugin --profile web add ./dsh-fff
+dsh plugin --profile web add ./dsh-fff-0.1.0.tgz
+```
+
+Then start the profile. The plugin inserts one row (`id: fff`) into the composition; `dsh --profile web --dump-config` shows it. (npm publishing is planned; `dsh plugin add dsh-fff` will work once `dsh-fff` is on the registry.)
 
 ## Tools
 

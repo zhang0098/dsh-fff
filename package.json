@@ -28,7 +28,8 @@
     "build": "tsc -p tsconfig.json",
     "prepare": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "node --test tests/smoke.test.mjs"
+    "test": "node --test tests/smoke.test.mjs",
+    "test:real": "node tests/real-harness.mjs"
   },
   "keywords": [
     "deepseek-harness",

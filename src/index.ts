@@ -12,6 +12,7 @@
  * plugin's `inject`).
  */
 
+import { realpathSync } from 'node:fs'
 import type { Context } from '@deepseek-ai/cordis'
 import { createUserMessage } from '@deepseek-ai/dsh-llm'
 import { FffConfig, resolveConfig, type FffConfig as FffConfigType } from './config.ts'
@@ -41,7 +42,7 @@ export function apply(ctx: Context, config: FffConfigType = {}): void {
   registry.onChanges = (root, summary) => {
     for (const agent of ctx.agents.list()) {
       const sessionCwd = agent.session.header.cwd
-      if (sessionCwd === undefined || sessionCwd === root) {
+      if (sessionCwd === undefined || cwdMatches(sessionCwd, root)) {
         try {
           agent.inject(createUserMessage({
             content: [{ type: 'text', text: summary }],
@@ -63,4 +64,14 @@ export function apply(ctx: Context, config: FffConfigType = {}): void {
       registry.dispose()
     }
   })
+}
+
+/** Compare a session cwd against the canonical indexed root. */
+function cwdMatches(cwd: string, root: string): boolean {
+  if (cwd === root) return true
+  try {
+    return realpathSync(cwd) === root
+  } catch {
+    return false
+  }
 }

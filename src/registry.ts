@@ -74,15 +74,16 @@ export class FffRegistry {
    * @param signal - optional tool-call cancellation signal.
    * @returns the ready finder entry; creation errors are thrown.
    */
-  async acquire(agent: Agent | undefined, signal?: AbortSignal): Promise<FinderEntry> {
+  async acquire(agent: Agent | undefined, _signal?: AbortSignal): Promise<FinderEntry> {
     if (this.disposed) throw new Error('dsh-fff: registry disposed')
     const root = resolveRoot(agent, this.config)
     let entry = this.entries.get(root)
     if (entry === undefined) {
       entry = await this.create(root)
     }
-    if (signal?.aborted ?? false) throw new Error('aborted')
-    await waitAbortable(entry.ready, signal)
+    // The initial scan is bounded by `indexReadyTimeoutMs`; tool cancellation
+    // is enforced by the caller's checkAborted before and after this await.
+    await entry.ready
     if (entry.error !== undefined) throw new Error(entry.error)
     return entry
   }
@@ -197,45 +198,14 @@ export class FffRegistry {
       const kinds = [...counts.entries()].map(([k, n]) => `${n} ${k}`).join(', ')
       this.onChanges(root, `[dsh-fff] ${total} file change${total === 1 ? '' : 's'} (${kinds}) in ${root}: ${parts.join(', ')}${tail}`)
     }
-    const sub = finder.watch((events) => {
+    // Whole-tree subscription; finder.destroy() tears every watcher down on
+    // plugin teardown, so the unsubscribe handle needs no explicit storage.
+    finder.watch((events) => {
       pendingEvents = pendingEvents.concat(events)
       if (timer !== undefined) clearTimeout(timer)
       timer = setTimeout(flush, this.config.watchInjectDebounceMs)
     })
-    if (sub.ok) {
-      // Unsubscribe is best-effort; finder.destroy() already tears watchers down.
-      void sub.value
-    }
   }
-}
-
-/** Wait for a promise, rejecting early when the signal aborts. */
-async function waitAbortable(promise: Promise<void>, signal?: AbortSignal): Promise<void> {
-  if (signal === undefined) {
-    await promise
-    return
-  }
-  if (signal.aborted) throw new Error('aborted')
-  await new Promise<void>((resolvePromise, reject) => {
-    const onAbort = (): void => {
-      cleanup()
-      reject(new Error('aborted'))
-    }
-    const cleanup = (): void => {
-      signal.removeEventListener('abort', onAbort)
-    }
-    signal.addEventListener('abort', onAbort, { once: true })
-    promise.then(
-      () => {
-        cleanup()
-        resolvePromise()
-      },
-      (error) => {
-        cleanup()
-        reject(error)
-      },
-    )
-  })
 }
 
 /** Shorten an absolute watched path to its root-relative display form. */

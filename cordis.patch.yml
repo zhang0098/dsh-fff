@@ -1,0 +1,15 @@
+# dsh-fff bundle layer: inserts the FFF-powered file search plugin row.
+#
+# Every option has a schema default; override any of them through a later
+# patch layer (the profile's cordis.patch.yml, the home-level cordis.patch.yml,
+# or a --patch overlay). A patch replaces the targeted row's whole `config`,
+# so restate every key you need:
+#
+# - id: fff
+#   config:
+#     basePath: /absolute/workspace
+#     defaultPageSize: 50
+
+- insert:
+    - id: fff
+      name: dsh-fff

@@ -6,6 +6,10 @@ Fast, frecency-ranked file and content search for [DeepSeek Harness](https://git
 
 FFF keeps a native in-process index of the workspace (paths + content) with a background watcher, so every search after the first is sub-10ms — dramatically cheaper than spawning `ripgrep` per call, with typo-resistant fuzzy matching, frecency ranking (files you open rank higher), and git-status annotations for free.
 
+## AI-generated code notice
+
+This plugin's code was written by **DeepSeek V4 Flash** (`deepseek-v4-flash`) through the DeepSeek Harness agent runtime. **It has not been reviewed by a human.** Automated checks (unit tests, a real-harness boot, and a live model round-trip) pass, but automation is not a substitute for human review. Review the source before using it in production; use at your own risk.
+
 ## Install
 
 Install into a profile with the `dsh` CLI (needs Node 22.19+):

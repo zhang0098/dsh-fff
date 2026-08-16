@@ -1,5 +1,7 @@
 # dsh-fff
 
+English | [中文](README.zh.md)
+
 Fast, frecency-ranked file and content search for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness), powered by [FFF](https://github.com/dmtrKovalenko/fff) (`@ff-labs/fff-node`).
 
 FFF keeps a native in-process index of the workspace (paths + content) with a background watcher, so every search after the first is sub-10ms — dramatically cheaper than spawning `ripgrep` per call, with typo-resistant fuzzy matching, frecency ranking (files you open rank higher), and git-status annotations for free.

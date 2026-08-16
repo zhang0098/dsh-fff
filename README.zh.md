@@ -19,6 +19,12 @@ FFF 在进程内维护一个常驻的原生工作区索引(路径 + 内容)和�
 dsh plugin --profile web add github:zhang0098/dsh-fff#v0.1.0
 ```
 
+profile 名字由你决定。`web` 和 `headless` 是内置模板;其他任意名字(比如 `tui`)在**首次使用时自动初始化**,以 `@deepseek-ai/dsh-base` 作为第一层,所以同样的命令可以直接作用于全新 profile:
+
+```sh
+dsh plugin --profile tui add github:zhang0098/dsh-fff#v0.1.0   # 首次使用会自动创建 profile "tui"
+```
+
 git 安装拉取的是源码,因此插件会在安装时通过 `prepare` 脚本构建。pnpm ≥10 默认阻止该构建,直到你放行:第一次 `add` 会失败并打印一个精确的 key——把它复制到 profile 的 `pnpm-workspace.yaml` 再重新运行:
 
 ```yaml
@@ -31,11 +37,11 @@ allowBuilds:
 本地目录 / tarball 安装无需放行:
 
 ```sh
-dsh plugin --profile web add ./dsh-fff
-dsh plugin --profile web add ./dsh-fff-0.1.0.tgz
+dsh plugin --profile tui add ./dsh-fff
+dsh plugin --profile tui add ./dsh-fff-0.1.0.tgz
 ```
 
-然后启动该 profile。插件会在组合中插入一行(`id: fff`);用 `dsh --profile web --dump-config` 可以查看。(npm 发布已在计划中;`dsh-fff` 上架 registry 后 `dsh plugin add dsh-fff` 即可用。)
+然后启动一个 profile。插件会在组合中插入一行(`id: fff`);用 `dsh --profile <名字> --dump-config` 可以查看。自定义 profile(如上面创建的 `tui`)只有 base + 插件、没有界面表面,要跑对话需再叠加 surface bundle——或者直接装进 `web` / `headless` 模板。(npm 发布已在计划中;`dsh-fff` 上架 registry 后 `dsh plugin add dsh-fff` 即可用。)
 
 ## 工具
 

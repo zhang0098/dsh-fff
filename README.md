@@ -19,6 +19,12 @@ Install into a profile with the `dsh` CLI (needs Node 22.19+):
 dsh plugin --profile web add github:zhang0098/dsh-fff#v0.1.0
 ```
 
+The profile name is up to you. `web` and `headless` ship as built-in templates; any other name (say `tui`) is initialized automatically on first use, with `@deepseek-ai/dsh-base` as its first layer, so the same command works for a brand-new profile:
+
+```sh
+dsh plugin --profile tui add github:zhang0098/dsh-fff#v0.1.0   # creates profile "tui" on first use
+```
+
 A git install fetches sources, so the plugin's `prepare` script builds them on install. pnpm ≥10 blocks that build until you allow it: the first `add` fails and prints an exact key — copy it into the profile's `pnpm-workspace.yaml` and re-run:
 
 ```yaml
@@ -31,11 +37,11 @@ Treat that allowance as install-time code execution: only allow packages whose s
 Local checkout / tarball installs need no allowance:
 
 ```sh
-dsh plugin --profile web add ./dsh-fff
-dsh plugin --profile web add ./dsh-fff-0.1.0.tgz
+dsh plugin --profile tui add ./dsh-fff
+dsh plugin --profile tui add ./dsh-fff-0.1.0.tgz
 ```
 
-Then start the profile. The plugin inserts one row (`id: fff`) into the composition; `dsh --profile web --dump-config` shows it. (npm publishing is planned; `dsh plugin add dsh-fff` will work once `dsh-fff` is on the registry.)
+Then start a profile. The plugin inserts one row (`id: fff`) into the composition; `dsh --profile <name> --dump-config` shows it. A custom profile with no surface bundle (e.g. `tui` as created above) needs a surface bundle added before it can run a conversation — or just install into the `web` / `headless` templates. (npm publishing is planned; `dsh plugin add dsh-fff` will work once `dsh-fff` is on the registry.)
 
 ## Tools
 
